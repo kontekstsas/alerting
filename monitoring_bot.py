@@ -20,6 +20,11 @@ urls = [
     'https://potolkisvetilniki.by/',
     'https://statgar.by/',
     'https://zoohelp.by/',
+    'https://b2b-auto.by/',
+    'https://sollers-auto.by/',
+    'https://kupon.by/',
+    'https://akumulyator.by/',
+    'https://svaybel.by/',
 ]
 
 # Токен и Chat ID считываются из секретов GitHub Actions (переменных окружения)
