@@ -26,7 +26,7 @@ jobs:
         run: pip install requests
         
       - name: Run site check script ▶️
-        run: python monitor.py
+        run: python monitoring_bot.py
         env:
           # Передаем секреты (токен и ID чата) из настроек репозитория в скрипт
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
