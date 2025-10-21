@@ -25,6 +25,8 @@ urls = [
     'https://kupon.by/',
     'https://akumulyator.by/',
     'https://svaybel.by/',
+    'https://mdcom.by/',
+    'https://toppromotion.by/',
 ]
 
 # Токен и Chat ID считываются из переменных окружения (например, секретов GitHub Actions)
