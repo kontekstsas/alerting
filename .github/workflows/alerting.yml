@@ -23,7 +23,9 @@ jobs:
       
       - name: Install dependencies 🛠️
         # Устанавливаем необходимую библиотеку requests
-        run: pip install cloudscraper
+        run: | 
+             pip install cloudscraper
+             pip install curl_cffi
         
       - name: Run site check script ▶️
         run: python monitoring_bot.py
