@@ -23,7 +23,7 @@ jobs:
       
       - name: Install dependencies 🛠️
         # Устанавливаем необходимую библиотеку requests
-        run: pip install requests
+        run: pip install cloudscraper
         
       - name: Run site check script ▶️
         run: python monitoring_bot.py
