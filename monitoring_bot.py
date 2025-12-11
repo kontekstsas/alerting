@@ -1,11 +1,18 @@
 import cloudscraper
-import urllib.parse
 import logging
 import time
 import os
 import ssl
 from requests.adapters import HTTPAdapter
 from urllib3.util.ssl_ import create_urllib3_context
+
+# Попытка импортировать curl_cffi для обхода жестких блокировок 403
+try:
+    from curl_cffi import requests as cffi_requests
+    CURL_CFFI_AVAILABLE = True
+except ImportError:
+    CURL_CFFI_AVAILABLE = False
+    print("ВАЖНО: Установите curl_cffi (pip install curl_cffi) для обхода 403 ошибок!")
 
 # --- КОНФИГУРАЦИЯ ---
 
@@ -32,61 +39,66 @@ urls = [
 bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
 chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
-# --- SPECAL SSL ADAPTER ---
-# Этот класс нужен для лечения ошибки "RemoteDisconnected".
-# Он заставляет Python использовать более совместимые параметры шифрования,
-# которые не обрывают соединение на строгих или старых серверах.
+# --- SSL ADAPTER (Лечит "RemoteDisconnected" на belkraj.by) ---
 class SSLAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
-        # SECLEVEL=1 позволяет использовать более широкий спектр шифров
         context = create_urllib3_context(ciphers='DEFAULT:@SECLEVEL=1')
         kwargs['ssl_context'] = context
         return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
-# --- ИНИЦИАЛИЗАЦИЯ СКРАПЕРА ---
-# Переключаемся на Firefox, так как его отпечатки реже блокируются "глупыми" фаерволами.
+# --- ИНИЦИАЛИЗАЦИЯ CLOUDSCRAPER ---
 scraper = cloudscraper.create_scraper(
-    browser={
-        'browser': 'firefox',
-        'platform': 'windows',
-        'desktop': True
-    }
+    browser={'browser': 'firefox', 'platform': 'windows', 'desktop': True}
 )
-
-# Подключаем наш лечебный адаптер ко всем https запросам
 scraper.mount('https://', SSLAdapter())
 
 # --- ФУНКЦИИ ---
 
 def check_site_availability(url, retries=3, delay=5):
     """
-    Проверяет доступность сайта.
+    Гибридная проверка:
+    1. Сначала cloudscraper (для совместимости со старыми SSL).
+    2. Если 403 -> curl_cffi (для имитации реального браузера).
     """
-    # ВАЖНО: Мы убрали User-Agent отсюда. 
-    # cloudscraper сам подставит правильный User-Agent, соответствующий Firefox.
-    # Ручная подмена часто вызывает ошибку RemoteDisconnected из-за несовпадения отпечатков.
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
     }
 
     last_error = None
 
     for attempt in range(1, retries + 1):
         try:
-            response = scraper.get(url, timeout=25, headers=headers, allow_redirects=True)
+            # --- ПОПЫТКА 1: Cloudscraper + SSLAdapter ---
+            response = scraper.get(url, timeout=25, headers=headers)
             
+            # Если получили 403 и у нас есть тяжелая артиллерия (curl_cffi)
+            if response.status_code == 403 and CURL_CFFI_AVAILABLE:
+                logging.warning(f"Попытка {attempt}: Cloudscraper получил 403. Пробуем curl_cffi (impersonate)...")
+                try:
+                    # Используем impersonate="chrome110" - это создает идеальный TLS отпечаток
+                    cffi_response = cffi_requests.get(
+                        url, 
+                        impersonate="chrome110", 
+                        headers=headers, 
+                        timeout=25
+                    )
+                    # Если cffi пробил защиту, возвращаем его статус
+                    if cffi_response.status_code == 200:
+                        logging.info(f"Успех: curl_cffi обошел блокировку для {url}")
+                        return 200, None
+                    elif cffi_response.status_code != 403:
+                         return cffi_response.status_code, None
+                    
+                except Exception as cffi_e:
+                    logging.error(f"Ошибка curl_cffi: {cffi_e}")
+
+            # Если cffi не помог или не нужен, проверяем обычный статус
             if response.status_code == 403:
-                 logging.warning(f"Попытка {attempt}: Получен 403 Forbidden.")
                  if attempt == retries:
-                     return 403, "Доступ запрещен (403). Блокировка защиты."
+                     return 403, "Доступ запрещен (403). Жесткая защита Cloudflare."
             else:
                 return response.status_code, None
 
@@ -108,7 +120,6 @@ def send_telegram_notification(bot_token, chat_id, message):
     try:
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {'chat_id': chat_id, 'text': message}
-        # Для Telegram не используем заголовки браузера, это API
         scraper.post(url, data=payload, headers={}, timeout=10)
         logging.info(f"Уведомление успешно отправлено в Telegram.")
     except Exception as e:
@@ -117,7 +128,10 @@ def send_telegram_notification(bot_token, chat_id, message):
 # --- ОСНОВНАЯ ЛОГИКА ---
 
 if __name__ == "__main__":
-    logging.info("Начало проверки сайтов (SSL Fix + Cloudscraper)...")
+    if not CURL_CFFI_AVAILABLE:
+        logging.warning("⚠️ Библиотека curl_cffi не найдена. Сайты с сильной защитой могут выдавать 403.")
+    
+    logging.info("Начало проверки (Hybrid: Cloudscraper + Curl_CFFI)...")
 
     for url in urls:
         http_code, error_message = check_site_availability(url)
