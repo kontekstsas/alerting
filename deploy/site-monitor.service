@@ -1,0 +1,30 @@
+[Unit]
+Description=Проверка сайтов клиентов
+Documentation=https://github.com/kontekstsas/alerting
+After=network-online.target
+Wants=network-online.target
+# если сам мониторинг упал — об этом тоже надо узнать
+OnFailure=site-monitor-failure.service
+
+[Service]
+Type=oneshot
+User=sitemonitor
+Group=sitemonitor
+WorkingDirectory=/opt/site-monitor
+EnvironmentFile=/etc/site-monitor/env
+ExecStart=/opt/site-monitor/venv/bin/python /opt/site-monitor/monitoring_bot.py
+TimeoutStartSec=1800
+
+# лог уходит в journal, смотреть: journalctl -u site-monitor
+StandardOutput=journal
+StandardError=journal
+
+# ограничения: сервису нужен только свой каталог и сеть
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/opt/site-monitor

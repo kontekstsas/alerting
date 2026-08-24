@@ -1,35 +1,64 @@
-name: Site Monitor (Hourly) 🌐
+name: Site Monitor 🌐
 
 on:
   schedule:
-    # CRON-выражение: 0 * * * *
-    # Запускает скрипт каждые 2 часа
+    # каждые 2 часа
     - cron: '0 */2 * * *'
-  # Позволяет запускать скрипт вручную через интерфейс GitHub Actions
-  workflow_dispatch: 
+  workflow_dispatch:
+
+# нужно, чтобы бот мог закоммитить state.json обратно в репозиторий
+permissions:
+  contents: write
+
+# два запуска одновременно подерутся за push — пропускаем лишние
+concurrency:
+  group: site-monitor
+  cancel-in-progress: false
 
 jobs:
   check-sites:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code ⬇️
         uses: actions/checkout@v4
-      
+
       - name: Set up Python 🐍
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x' 
-      
+          python-version: '3.x'
+
       - name: Install dependencies 🛠️
-        # Устанавливаем необходимую библиотеку requests
-        run: | 
-             pip install cloudscraper
-             pip install curl_cffi
-        
-      - name: Run site check script ▶️
+        run: pip install cloudscraper curl_cffi
+
+      - name: Self-test детектора 🧪
+        # если правила перестали ловить сохранённую заглушку — падаем сразу,
+        # чтобы не выяснять это во время настоящей аварии
+        run: python monitoring_bot.py --selftest
+
+      - name: Run site check ▶️
         run: python monitoring_bot.py
         env:
-          # Передаем секреты (токен и ID чата) из настроек репозитория в скрипт
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # раннеры GitHub зарубежные, поэтому сайты с пометкой network: 'by-only'
+          # здесь не проверяются и в тревоги не попадают — только в ежедневную сводку
+          MONITOR_LOCATION: abroad
+
+      - name: Save state 💾
+        # state.json помнит, о чём уже сообщали, чтобы не слать одно и то же каждые 2 часа.
+        # .keepalive меняется раз в неделю: свежие коммиты не дают GitHub
+        # отключить расписание за неактивность (именно так мониторинг умер 24.02.2026).
+        run: |
+          git config user.name "site-monitor"
+          git config user.email "actions@users.noreply.github.com"
+          date -u +%G-W%V > .keepalive
+          git add state.json .keepalive || true
+          if git diff --staged --quiet; then
+            echo "Состояние не менялось, коммит не нужен"
+          else
+            git commit -m "monitor: состояние сайтов [skip ci]"
+            git pull --rebase --autostash
+            git push
+          fi

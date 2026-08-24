@@ -1,0 +1,13 @@
+[Unit]
+Description=Запускать проверку сайтов каждые 30 минут
+
+[Timer]
+OnCalendar=*:00/30
+# запуск, пропущенный из-за перезагрузки или простоя, выполнится сразу после старта
+Persistent=true
+# небольшой разброс, чтобы не бить по сайтам ровно в ноль секунд
+RandomizedDelaySec=120
+Unit=site-monitor.service
+
+[Install]
+WantedBy=timers.target

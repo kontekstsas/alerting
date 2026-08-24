@@ -1,0 +1,7 @@
+[Unit]
+Description=Сообщить в Telegram, что мониторинг сайтов упал
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/site-monitor/env
+ExecStart=/bin/bash -c 'curl -sS -m 20 -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" -d chat_id="$TELEGRAM_CHAT_ID" --data-urlencode "text=⚠️ Мониторинг сайтов упал на $(hostname). Сайты сейчас НЕ проверяются. Разбор: journalctl -u site-monitor -n 50 --no-pager"'
