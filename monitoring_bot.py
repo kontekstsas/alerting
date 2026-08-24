@@ -54,20 +54,18 @@ for stream in (sys.stdout, sys.stderr):
 #                  машины обрыв связи для него считается ожидаемым, а не аварией
 SITES = [
     'https://sas-company.by/',
-    'https://belkraj.by/',
-    'https://bood.by/',
     {'url': 'https://flersalon.by/', 'timeout': 60, 'network': 'by-only'},
     {'url': 'https://forosaktiv.by/', 'must_contain': '760-88-66'},
-    'https://pomogator.by/',
     'https://potolkisvetilniki.by/',
     'https://statgar.by/',
     'https://zoohelp.by/',
-    'https://b2b-auto.by/',
-    'https://sollers-auto.by/',
     'https://akumulyator.by/',
-    {'url': 'https://svaybel.by/', 'timeout': 60, 'network': 'by-only'},
     {'url': 'https://mdcom.by/', 'timeout': 60, 'network': 'by-only'},
     'https://toppromotion.by/',
+    'https://auto-akb.by/',
+    'https://x-lab.by/',
+    'https://optizona.by/',
+    'https://flersalon2.by/',
 ]
 
 # Откуда запущен мониторинг: 'by' — из Беларуси, всё остальное — извне.
