@@ -50,8 +50,13 @@ for stream in (sys.stdout, sys.stderr):
 #   must_contain — строка, которая обязана быть на живой странице (свой "ключ проверки")
 #   timeout      — свой таймаут для медленных сайтов
 #   skip         — отключённые проверки: suspension, stub, catchall, assets, ssl
-#   network      — 'by-only', если сайт отвечает только из Беларуси: с зарубежной
-#                  машины обрыв связи для него считается ожидаемым, а не аварией
+#   network      — 'by-only'    сайт отвечает только из Беларуси: с зарубежной
+#                                машины обрыв связи для него ожидаем, а не авария;
+#                  'cloudflare'  за Cloudflare, который отдаёт 403 датацентровым IP.
+#                                Проверить с сервера нельзя, пока не сделано
+#                                исключение в самом Cloudflare (см. headers ниже)
+#   headers      — свои заголовки к запросу. Нужны, чтобы пройти Cloudflare:
+#                  заводим в нём правило Skip по секретному заголовку и шлём его
 SITES = [
     'https://sas-company.by/',
     {'url': 'https://flersalon.by/', 'timeout': 60, 'network': 'by-only'},
@@ -59,10 +64,10 @@ SITES = [
     'https://potolkisvetilniki.by/',
     'https://statgar.by/',
     'https://zoohelp.by/',
-    'https://akumulyator.by/',
+    {'url': 'https://akumulyator.by/', 'network': 'cloudflare'},
     {'url': 'https://mdcom.by/', 'timeout': 60, 'network': 'by-only'},
     'https://toppromotion.by/',
-    'https://auto-akb.by/',
+    {'url': 'https://auto-akb.by/', 'network': 'cloudflare'},
     {'url': 'https://x-lab.by/', 'timeout': 60, 'network': 'by-only'},
     'https://optizona.by/',
     'https://flersalon2.by/',
@@ -151,19 +156,22 @@ class Result:
         self.error = error
 
 
-def fetch(url, retries=2, delay=5, timeout=DEFAULT_TIMEOUT):
+def fetch(url, retries=2, delay=5, timeout=DEFAULT_TIMEOUT, extra_headers=None):
     """Гибрид: cloudscraper, а при 403 — curl_cffi с подменой TLS-отпечатка."""
     last_error = None
+    headers = dict(HEADERS)
+    if extra_headers:
+        headers.update(extra_headers)
 
     for attempt in range(1, retries + 1):
         try:
-            r = scraper.get(url, timeout=timeout, headers=HEADERS)
+            r = scraper.get(url, timeout=timeout, headers=headers)
 
             if r.status_code == 403 and CURL_CFFI_AVAILABLE:
                 logging.warning("%s: 403 от cloudscraper, пробуем curl_cffi", url)
                 try:
                     c = cffi_requests.get(url, impersonate="chrome124",
-                                          headers=HEADERS, timeout=timeout)
+                                          headers=headers, timeout=timeout)
                     if c.status_code != 403:
                         return Result(c.status_code, str(c.url), c.text,
                                       c.headers.get('content-type', ''))
@@ -299,7 +307,9 @@ def check_site(site, prev):
     skip = site.get('skip', [])
     timeout = site.get('timeout', DEFAULT_TIMEOUT)
 
-    main = fetch(url, timeout=timeout)
+    site_headers = site.get('headers')
+
+    main = fetch(url, timeout=timeout, extra_headers=site_headers)
 
     # Сетевые сбои считаем ненадёжными: сайт мог просто моргнуть
     if main.error:
@@ -317,7 +327,8 @@ def check_site(site, prev):
 
     # Весь сайт отдаёт одну и ту же страницу (мягкий 404)
     if 'catchall' not in skip:
-        probe = fetch(urljoin(url, PROBE_PATH), retries=1, timeout=timeout)
+        probe = fetch(urljoin(url, PROBE_PATH), retries=1, timeout=timeout,
+                      extra_headers=site_headers)
         if not probe.error and probe.status == 200:
             probe_text = visible_text(probe.text)
             same = probe_text == text
@@ -331,7 +342,7 @@ def check_site(site, prev):
     # Стили отдаются как HTML (сайт без вёрстки)
     if 'assets' not in skip:
         for css_url in stylesheet_links(main.text, main.url):
-            got = fetch(css_url, retries=1, timeout=timeout)
+            got = fetch(css_url, retries=1, timeout=timeout, extra_headers=site_headers)
             if got.error or got.status != 200:
                 continue
             if 'html' in got.content_type.lower():
@@ -445,15 +456,25 @@ def main():
         problems, baseline, hard = check_site(site, prev)
         entry = {'baseline_len': baseline} if baseline else {}
 
-        # Сайт отвечает только из Беларуси, а мы снаружи — обрыв связи здесь
-        # ожидаем и тревогу не поднимаем. Но и молча забыть о нём нельзя:
-        # такие сайты попадают в ежедневную сводку отдельной строкой.
-        unreachable = problems and problems[0].startswith('нет соединения')
-        if unreachable and site.get('network') == 'by-only' and LOCATION != 'by':
+        # Часть сайтов с чужого адреса проверить нельзя в принципе:
+        #   by-only    — не пускают зарубежные адреса, соединение не встаёт;
+        #   cloudflare — Cloudflare отдаёт 403 любому датацентровому IP,
+        #                подмена TLS-отпечатка тут не спасает: режут по адресу,
+        #                а не по отпечатку, поэтому от страны запуска не зависит.
+        # Ожидаемый симптом для таких сайтов — не авария, тревогу не поднимаем.
+        # Но и молча забыть нельзя: они идут отдельной строкой в сводку.
+        symptom = problems[0] if problems else ''
+        no_connection = symptom.startswith('нет соединения')
+        net = site.get('network')
+        expected = (
+            (net == 'by-only' and LOCATION != 'by' and no_connection)
+            or (net == 'cloudflare' and (symptom == 'код ответа 403' or no_connection))
+        )
+        if expected:
             entry['status'] = 'skipped'
             entry['fail_streak'] = 0
             sites[url] = entry
-            logging.info("%s: недоступен из-за рубежа, это ожидаемо", url)
+            logging.info("%s: с этого адреса не проверяется (%s), это ожидаемо", url, net)
             time.sleep(2)
             continue
 
@@ -525,7 +546,7 @@ def main():
         else:
             lines.append("Все %s проверенных сайтов в порядке." % checked)
         if skipped:
-            lines += ["", "Не проверяются отсюда (отвечают только из Беларуси):"]
+            lines += ["", "Не проверяются с этого адреса (блокировка по IP):"]
             lines += ["• " + u for u in skipped]
         send("\n".join(lines))
         state['last_digest'] = today
