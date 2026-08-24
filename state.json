@@ -2,22 +2,12 @@
   "last_digest": "2026-08-24",
   "sites": {
     "https://akumulyator.by/": {
-      "fail_streak": 1,
-      "last_alert": "2026-08-24T09:34:01+00:00",
-      "problems": [
-        "код ответа 403"
-      ],
-      "since": "2026-08-24T09:34:01+00:00",
-      "status": "fail"
+      "fail_streak": 0,
+      "status": "skipped"
     },
     "https://auto-akb.by/": {
-      "fail_streak": 1,
-      "last_alert": "2026-08-24T09:34:01+00:00",
-      "problems": [
-        "код ответа 403"
-      ],
-      "since": "2026-08-24T09:34:01+00:00",
-      "status": "fail"
+      "fail_streak": 0,
+      "status": "skipped"
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
