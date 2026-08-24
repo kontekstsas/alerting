@@ -1,0 +1,14 @@
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# локальные прогоны
+run.log
+
+# ВНИМАНИЕ: state.json и .keepalive НЕ игнорируем — их коммитит сам workflow.
+# state.json помнит, о чём уже сообщали, .keepalive не даёт GitHub заглушить расписание.
