@@ -63,7 +63,7 @@ SITES = [
     {'url': 'https://mdcom.by/', 'timeout': 60, 'network': 'by-only'},
     'https://toppromotion.by/',
     'https://auto-akb.by/',
-    'https://x-lab.by/',
+    {'url': 'https://x-lab.by/', 'timeout': 60, 'network': 'by-only'},
     'https://optizona.by/',
     'https://flersalon2.by/',
 ]
