@@ -1,0 +1,78 @@
+{
+  "last_digest": "2026-08-24",
+  "sites": {
+    "https://akumulyator.by/": {
+      "fail_streak": 1,
+      "last_alert": "2026-08-24T09:34:01+00:00",
+      "problems": [
+        "код ответа 403"
+      ],
+      "since": "2026-08-24T09:34:01+00:00",
+      "status": "fail"
+    },
+    "https://auto-akb.by/": {
+      "fail_streak": 1,
+      "last_alert": "2026-08-24T09:34:01+00:00",
+      "problems": [
+        "код ответа 403"
+      ],
+      "since": "2026-08-24T09:34:01+00:00",
+      "status": "fail"
+    },
+    "https://flersalon.by/": {
+      "baseline_len": 7000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://flersalon2.by/": {
+      "baseline_len": 7500,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://forosaktiv.by/": {
+      "baseline_len": 19000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://mdcom.by/": {
+      "baseline_len": 11000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://optizona.by/": {
+      "baseline_len": 22500,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://potolkisvetilniki.by/": {
+      "baseline_len": 15000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://sas-company.by/": {
+      "baseline_len": 13000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://statgar.by/": {
+      "baseline_len": 32500,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://toppromotion.by/": {
+      "baseline_len": 2000,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://x-lab.by/": {
+      "baseline_len": 8500,
+      "fail_streak": 0,
+      "status": "ok"
+    },
+    "https://zoohelp.by/": {
+      "baseline_len": 3500,
+      "fail_streak": 0,
+      "status": "ok"
+    }
+  }
+}
