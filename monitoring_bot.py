@@ -59,16 +59,16 @@ for stream in (sys.stdout, sys.stderr):
 #                  заводим в нём правило Skip по секретному заголовку и шлём его
 SITES = [
     'https://sas-company.by/',
-    {'url': 'https://flersalon.by/', 'timeout': 60, 'network': 'by-only'},
+    {'url': 'https://flersalon.by/', 'timeout': 60},
     {'url': 'https://forosaktiv.by/', 'must_contain': '760-88-66'},
     'https://potolkisvetilniki.by/',
     'https://statgar.by/',
     'https://zoohelp.by/',
     {'url': 'https://akumulyator.by/', 'network': 'cloudflare'},
-    {'url': 'https://mdcom.by/', 'timeout': 60, 'network': 'by-only'},
+    {'url': 'https://mdcom.by/', 'timeout': 60},
     'https://toppromotion.by/',
     {'url': 'https://auto-akb.by/', 'network': 'cloudflare'},
-    {'url': 'https://x-lab.by/', 'timeout': 60, 'network': 'by-only'},
+    {'url': 'https://x-lab.by/', 'timeout': 60},
     'https://optizona.by/',
     'https://flersalon2.by/',
 ]
