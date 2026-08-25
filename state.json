@@ -51,13 +51,8 @@
     },
     "https://toppromotion.by/": {
       "baseline_len": 2000,
-      "fail_streak": 1,
-      "last_alert": "2026-08-25T18:23:47+00:00",
-      "problems": [
-        "код ответа 403"
-      ],
-      "since": "2026-08-25T18:23:47+00:00",
-      "status": "fail"
+      "fail_streak": 0,
+      "status": "ok"
     },
     "https://x-lab.by/": {
       "baseline_len": 8500,
