@@ -1,5 +1,5 @@
 {
-  "last_digest": "2026-08-24",
+  "last_digest": "2026-08-25",
   "sites": {
     "https://akumulyator.by/": {
       "fail_streak": 0,
@@ -21,8 +21,18 @@
     },
     "https://forosaktiv.by/": {
       "baseline_len": 19000,
-      "fail_streak": 0,
-      "status": "ok"
+      "fail_streak": 1,
+      "last_alert": "2026-08-25T06:26:52+00:00",
+      "problems": [
+        "редирект на заглушку хостера: https://forosaktiv.by/cgi-sys/suspendedpage.cgi",
+        "заголовок страницы — «Suspended page»",
+        "страница почти пустая: 465 символов текста",
+        "текст усох: 465 символов вместо привычных ~19000",
+        "на странице нет обязательной строки «760-88-66»",
+        "несуществующий адрес отдаёт 200 и ту же самую страницу — сайт подменён заглушкой на всех URL"
+      ],
+      "since": "2026-08-25T06:26:52+00:00",
+      "status": "fail"
     },
     "https://mdcom.by/": {
       "baseline_len": 11000,
