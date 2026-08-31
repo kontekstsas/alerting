@@ -1,5 +1,5 @@
 {
-  "last_digest": "2026-08-30",
+  "last_digest": "2026-08-31",
   "sites": {
     "https://akumulyator.by/": {
       "fail_streak": 0,
@@ -11,7 +11,7 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-08-31T02:15:57+00:00",
       "problems": [
         "SSL-сертификат кончается через 13 дн."
