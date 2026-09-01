@@ -11,10 +11,10 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 4,
-      "last_alert": "2026-08-31T02:15:57+00:00",
+      "fail_streak": 5,
+      "last_alert": "2026-09-01T02:34:21+00:00",
       "problems": [
-        "SSL-сертификат кончается через 13 дн."
+        "SSL-сертификат кончается через 12 дн."
       ],
       "since": "2026-08-31T02:15:57+00:00",
       "status": "fail"
@@ -35,7 +35,7 @@
       "status": "ok"
     },
     "https://optizona.by/": {
-      "baseline_len": 22000,
+      "baseline_len": 21500,
       "fail_streak": 0,
       "status": "ok"
     },
