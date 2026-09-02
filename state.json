@@ -11,7 +11,7 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 14,
+      "fail_streak": 15,
       "last_alert": "2026-09-02T06:37:15+00:00",
       "problems": [
         "SSL-сертификат кончается через 11 дн."
