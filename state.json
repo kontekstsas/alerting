@@ -11,7 +11,7 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 17,
+      "fail_streak": 18,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
@@ -29,7 +29,7 @@
     },
     "https://forosaktiv.by/": {
       "baseline_len": 19000,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
@@ -42,7 +42,7 @@
     },
     "https://mdcom.by/": {
       "baseline_len": 11000,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
@@ -64,7 +64,7 @@
     },
     "https://sas-company.by/": {
       "baseline_len": 13000,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
@@ -76,7 +76,7 @@
     },
     "https://statgar.by/": {
       "baseline_len": 32500,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
@@ -93,7 +93,7 @@
     },
     "https://x-lab.by/": {
       "baseline_len": 8500,
-      "fail_streak": 1,
+      "fail_streak": 2,
       "last_alert": "2026-09-03T08:22:42+00:00",
       "problems": [
         "страница почти пустая: 132 символов текста",
