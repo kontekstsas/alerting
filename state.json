@@ -11,7 +11,7 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 24,
+      "fail_streak": 25,
       "last_alert": "2026-09-04T12:21:03+00:00",
       "problems": [
         "SSL-сертификат кончается через 9 дн."
@@ -56,8 +56,13 @@
     },
     "https://toppromotion.by/": {
       "baseline_len": 2000,
-      "fail_streak": 0,
-      "status": "ok"
+      "fail_streak": 1,
+      "last_alert": "2026-09-04T17:15:37+00:00",
+      "problems": [
+        "код ответа 403"
+      ],
+      "since": "2026-09-04T17:15:37+00:00",
+      "status": "fail"
     },
     "https://x-lab.by/": {
       "baseline_len": 8500,
