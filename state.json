@@ -11,10 +11,10 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 54,
+      "fail_streak": 55,
       "last_alert": "2026-09-08T20:27:56+00:00",
       "problems": [
-        "SSL-сертификат кончается через 5 дн."
+        "SSL-сертификат кончается через 4 дн."
       ],
       "since": "2026-08-31T02:15:57+00:00",
       "status": "fail"
@@ -66,13 +66,8 @@
     },
     "https://zoohelp.by/": {
       "baseline_len": 3500,
-      "fail_streak": 1,
-      "last_alert": "2026-09-08T23:44:48+00:00",
-      "problems": [
-        "код ответа 403"
-      ],
-      "since": "2026-09-08T23:44:48+00:00",
-      "status": "fail"
+      "fail_streak": 0,
+      "status": "ok"
     }
   }
 }
