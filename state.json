@@ -11,10 +11,10 @@
     },
     "https://flersalon.by/": {
       "baseline_len": 7000,
-      "fail_streak": 59,
+      "fail_streak": 60,
       "last_alert": "2026-09-09T22:05:49+00:00",
       "problems": [
-        "SSL-сертификат кончается через 4 дн."
+        "SSL-сертификат кончается через 3 дн."
       ],
       "since": "2026-08-31T02:15:57+00:00",
       "status": "fail"
@@ -30,12 +30,12 @@
       "status": "ok"
     },
     "https://mdcom.by/": {
-      "baseline_len": 9500,
+      "baseline_len": 9000,
       "fail_streak": 0,
       "status": "ok"
     },
     "https://optizona.by/": {
-      "baseline_len": 24000,
+      "baseline_len": 26000,
       "fail_streak": 0,
       "status": "ok"
     },
@@ -56,7 +56,7 @@
     },
     "https://toppromotion.by/": {
       "baseline_len": 2000,
-      "fail_streak": 2,
+      "fail_streak": 3,
       "last_alert": "2026-09-09T18:55:30+00:00",
       "problems": [
         "SSL-сертификат кончается через 13 дн."
